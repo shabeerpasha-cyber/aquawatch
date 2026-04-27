@@ -13,7 +13,6 @@ AquaWatch enables citizens to:
 ## 🚀 Quick Start
 
 ### Option 1: Direct Browser Open
-Simply open `index.html` in any modern web browser:
 ```bash
 # Windows
 start index.html
@@ -31,7 +30,7 @@ xdg-open index.html
 python -m http.server 8000
 # Then open http://localhost:8000
 
-# Node.js (if available)
+# Node.js
 npx serve .
 ```
 
@@ -66,39 +65,68 @@ npx serve .
 - 🏆 **Clean Streets**: Submit 10 reports
 - 💉 **Lifesaver**: Submit 20 reports
 
-## 🏗️ Architecture
+## 🏗️ Project Structure
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed system design.
-
-### Tech Stack
-- **React 18** - UI framework (via CDN)
-- **Tailwind CSS** - Styling (via CDN)
-- **Leaflet.js** - Interactive maps (OpenStreetMap)
-- **LocalStorage** - Data persistence (browser-based)
-- **Babel** - JSX compilation in browser
-
-### File Structure
 ```
 aquawatch/
-├── index.html          # Main application (single file)
-├── package.json        # Project metadata
-├── vite.config.js      # Vite configuration (for future dev server)
-├── tailwind.config.js  # Tailwind configuration
-├── postcss.config.js   # PostCSS configuration
-├── task_plan.md        # Development task tracking
-├── README.md           # This file
+├── index.html              # Main application (single-file React app)
+├── package.json            # NPM configuration
+├── vite.config.js         # Vite dev server config
+├── tailwind.config.js     # Tailwind CSS config
+├── postcss.config.js      # PostCSS config
+├── .gitignore             # Git ignore rules
+├── .env.example           # Environment variables template
+├── README.md              # This file
+├── ARCHITECTURE.md        # System design documentation
+├── CHANGELOG.md           # Version history
+├── CONTRIBUTING.md        # Contribution guidelines
+├── CLAUDE.md              # AI agent conventions
+├── task_plan.md           # Development task tracking
 └── docs/
-    └── decisions/      # Architecture Decision Records
+    └── decisions/         # Architecture Decision Records
+        ├── ADR-001.md     # Single HTML file implementation
+        ├── ADR-002.md    # LocalStorage for persistence
+        ├── ADR-003.md    # OpenStreetMap for mapping
+        └── ADR-004.md    # Rule-based AI chatbot
 ```
 
 ## 🔧 Development
+
+### Git Workflow (IMPORTANT)
+
+**After every working session, follow these steps:**
+
+```bash
+# 1. Check status
+git status
+
+# 2. Stage all changes
+git add -A
+
+# 3. Commit with descriptive message
+git commit -m "Description of changes made"
+
+# 4. Push to GitHub
+git push origin master
+```
+
+**Commit Message Format:**
+```
+<type>: <short description>
+
+- Change 1
+- Change 2
+- Change 3
+
+Types: feat, fix, docs, style, refactor, chore
+```
 
 ### Adding New Features
 
 1. **New Report Category**: Add to `CATEGORIES` object (around line 89)
 2. **New Badge**: Add to `BADGES` object (around line 104)
-3. **New AI Response**: Add to `AI_RESPONSES` object (search for "AI_RESPONSES")
-4. **New Hygiene Tip**: Add to `HYGIENE_TIPS` array (search for "HYGIENE_TIPS")
+3. **New AI Response**: Add to `AI_RESPONSES` object
+4. **New Hygiene Tip**: Add to `HYGIENE_TIPS` array
 
 ### Code Style
 - Uses embedded React components in single HTML file
@@ -134,6 +162,15 @@ BADGES = {
 }
 ```
 
+## 🧪 Testing
+
+After any code change:
+1. Open `index.html` in browser
+2. Test the feature
+3. Check browser console for errors
+4. Verify LocalStorage works
+5. **Commit & Push**
+
 ## ⚠️ Limitations
 
 - **Data stored locally**: Reports only exist in browser localStorage
@@ -141,7 +178,7 @@ BADGES = {
 - **Bengaluru only**: Hardcoded coordinates and BBMP references
 - **Fake GPS**: New reports use random coordinates near Bengaluru center
 
-See [LIMITATIONS.md](./docs/LIMITATIONS.md) for detailed limitations and planned improvements.
+See [docs/LIMITATIONS.md](./docs/LIMITATIONS.md) for detailed limitations.
 
 ## 📄 Documentation
 
@@ -151,6 +188,18 @@ See [LIMITATIONS.md](./docs/LIMITATIONS.md) for detailed limitations and planned
 | [docs/decisions/](./docs/decisions/) | Architecture Decision Records (ADRs) |
 | [CLAUDE.md](./CLAUDE.md) | AI agent conventions and rules |
 | [CHANGELOG.md](./CHANGELOG.md) | Version history and changes |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | How to contribute |
+
+## 🔗 GitHub Repository
+
+- **URL**: https://github.com/shabeerpasha-cyber/aquawatch
+- **Branch**: master
+- **Remote**: origin
+
+### Push After Every Session
+```bash
+git add -A && git commit -m "Session update: <changes>" && git push origin master
+```
 
 ## 📄 License
 
@@ -162,8 +211,4 @@ Built with 💙 for Bengaluru's community water safety.
 
 ---
 
-**Note**: This is a prototype/demo application. For production deployment, consider adding:
-- Backend database (Firebase, Supabase, or custom)
-- User authentication
-- Real GPS location services
-- Integration with BBMP (Bruhat Bengaluru Mahanagara Palike)
+**Remember:** Commit and push your changes after every working session!

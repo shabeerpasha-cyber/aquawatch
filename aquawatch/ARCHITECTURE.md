@@ -1,4 +1,4 @@
-# AquaWatch Architecture
+winget install GitHub.cli# AquaWatch Architecture
 
 ## System Overview
 

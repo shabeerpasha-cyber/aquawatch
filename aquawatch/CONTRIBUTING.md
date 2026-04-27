@@ -2,6 +2,54 @@
 
 Thank you for your interest in contributing to AquaWatch! This document will help you get started.
 
+---
+
+## 🚨 IMPORTANT: Version Control Workflow
+
+**After every working session, you MUST commit and push your changes:**
+
+```bash
+# 1. Navigate to project
+cd aquawatch/
+
+# 2. Check what changed
+git status
+
+# 3. Stage all changes
+git add -A
+
+# 4. Commit with descriptive message
+git commit -m "feat: add new feature X
+
+- Change 1
+- Change 2
+- Fixed bug Y"
+
+# 5. Push to GitHub
+git push origin master
+```
+
+### Commit Message Types
+| Type | Use For |
+|------|---------|
+| `feat:` | New features |
+| `fix:` | Bug fixes |
+| `docs:` | Documentation changes |
+| `style:` | Code style changes |
+| `refactor:` | Code refactoring |
+| `chore:` | Maintenance tasks |
+
+### Example Commit Messages
+```bash
+# Good commit messages
+git commit -m "docs: update README with git workflow"
+git commit -m "feat: add new report category for flooding"
+git commit -m "fix: resolve photo upload issue on mobile"
+git commit -m "chore: add AI response for water safety"
+```
+
+---
+
 ## 🤔 How Can I Contribute?
 
 ### Reporting Bugs

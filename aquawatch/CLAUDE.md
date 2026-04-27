@@ -1,3 +1,4 @@
+
 # AquaWatch - AI Agent Conventions
 
 This file provides rules and conventions for any AI agent (like Claude, GPT, or future LLMs) working on the AquaWatch project.
@@ -5,6 +6,50 @@ This file provides rules and conventions for any AI agent (like Claude, GPT, or 
 ## Project Overview
 
 AquaWatch is a single-file React application for reporting Water, Sanitation, and Hygiene (WASH) issues in Bengaluru, India. All code is in `index.html`.
+
+## 🚨 MANDATORY: Version Control Workflow
+
+**After every working session, the AI agent MUST commit and push changes:**
+
+```bash
+# 1. Check status
+git status
+
+# 2. Stage all changes
+git add -A
+
+# 3. Commit with descriptive message
+git commit -m "feat: description of changes
+
+- Change 1
+- Change 2"
+
+# 4. Push to GitHub
+git push origin master
+```
+
+### Quick One-liner
+```bash
+git add -A && git commit -m "feat: describe changes" && git push origin master
+```
+
+### When to Commit
+- ✅ After completing any feature
+- ✅ After fixing any bug
+- ✅ After updating documentation
+- ✅ After every working session ends
+
+### Commit Types
+| Type | Use For |
+|------|---------|
+| `feat:` | New features |
+| `fix:` | Bug fixes |
+| `docs:` | Documentation |
+| `style:` | Code style |
+| `refactor:` | Refactoring |
+| `chore:` | Maintenance |
+
+---
 
 ## Critical Rules
 
