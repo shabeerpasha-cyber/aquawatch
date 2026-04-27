@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build output
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Local development
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database (local)
+*.db
+*.sqlite
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Secrets
+secret/
+credentials/
+*.pem
+*.key
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+*.bak
+*.swp
+.sass-cache/
+
+# Embedded git repositories (don't track)
+agent-skills/
+generated/
