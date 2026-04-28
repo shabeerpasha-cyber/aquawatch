@@ -1,6 +1,6 @@
 
 # AquaWatch - AI Agent Conventions
-
+y reading 
 This file provides rules and conventions for any AI agent (like Claude, GPT, or future LLMs) working on the AquaWatch project.
 
 ## Project Overview

@@ -1,213 +1,148 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { BarChart3, TrendingUp, AlertTriangle, CheckCircle2, Users, FileText } from 'lucide-react';
+import { BarChart3, PieChart, TrendingUp } from 'lucide-react';
 
 export default function Stats() {
-  const { reports, users, getStats, CATEGORIES, STATUSES } = useApp();
+  const { reports, getStats, CATEGORIES, STATUSES } = useApp();
   const stats = getStats();
 
-  // Calculate category breakdown
-  const categoryStats = Object.entries(CATEGORIES).map(([key, cat]) => {
-    const count = reports.filter(r => r.category === key).length;
-    const percentage = reports.length > 0 ? (count / reports.length) * 100 : 0;
-    return { ...cat, key, count, percentage };
-  }).sort((a, b) => b.count - a.count);
-
-  // Calculate status breakdown
-  const statusStats = Object.entries(STATUSES).map(([key, status]) => {
-    const count = reports.filter(r => r.status === key).length;
-    const percentage = reports.length > 0 ? (count / reports.length) * 100 : 0;
-    return { ...status, key, count, percentage };
+  // Calculate category distribution
+  const categoryCounts = {};
+  reports.forEach(report => {
+    categoryCounts[report.category] = (categoryCounts[report.category] || 0) + 1;
   });
 
-  // Calculate average risk by category
-  const riskByCategory = Object.entries(CATEGORIES).map(([key, cat]) => {
-    const categoryReports = reports.filter(r => r.category === key);
-    const avgRisk = categoryReports.length > 0
-      ? Math.round(categoryReports.reduce((sum, r) => sum + r.riskScore, 0) / categoryReports.length)
-      : 0;
-    return { ...cat, key, avgRisk, count: categoryReports.length };
-  }).sort((a, b) => b.avgRisk - a.avgRisk);
+  // Calculate status distribution
+  const statusCounts = {
+    OPEN: 0,
+    INVESTIGATING: 0,
+    RESOLVED: 0
+  };
+  reports.forEach(report => {
+    if (statusCounts[report.status] !== undefined) {
+      statusCounts[report.status]++;
+    }
+  });
+
+  const maxCategoryCount = Math.max(...Object.values(categoryCounts), 1);
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl shadow-lg p-6">
-        <div className="flex items-center space-x-3 mb-2">
-          <BarChart3 size={32} />
-          <h1 className="text-2xl font-bold">WASH Statistics</h1>
-        </div>
-        <p className="text-primary-100">
-          Overview of water and sanitation reports across the community.
-        </p>
-      </div>
-
-      {/* Key Metrics */}
+      {/* Overview Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl shadow-md p-6">
-          <div className="flex items-center space-x-3 mb-2">
-            <FileText className="text-primary-600" size={24} />
-            <span className="text-gray-500 text-sm">Total Reports</span>
+          <div className="flex items-center gap-3 mb-3">
+            <BarChart3 className="text-primary-500" size={24} />
+            <span className="text-sm text-gray-600">Total Reports</span>
           </div>
-          <p className="text-3xl font-bold text-gray-800">{stats.totalReports}</p>
+          <p className="text-4xl font-bold text-gray-800">{stats.totalReports}</p>
         </div>
 
         <div className="bg-white rounded-xl shadow-md p-6">
-          <div className="flex items-center space-x-3 mb-2">
-            <AlertTriangle className="text-red-500" size={24} />
-            <span className="text-gray-500 text-sm">Open Issues</span>
+          <div className="flex items-center gap-3 mb-3">
+            <TrendingUp className="text-green-500" size={24} />
+            <span className="text-sm text-gray-600">Avg Risk</span>
           </div>
-          <p className="text-3xl font-bold text-red-600">{stats.openReports}</p>
+          <p className="text-4xl font-bold text-green-600">{stats.averageRisk}%</p>
         </div>
 
         <div className="bg-white rounded-xl shadow-md p-6">
-          <div className="flex items-center space-x-3 mb-2">
-            <CheckCircle2 className="text-green-500" size={24} />
-            <span className="text-gray-500 text-sm">Resolved</span>
+          <div className="flex items-center gap-3 mb-3">
+            <PieChart className="text-blue-500" size={24} />
+            <span className="text-sm text-gray-600">Categories</span>
           </div>
-          <p className="text-3xl font-bold text-green-600">{stats.resolvedReports}</p>
+          <p className="text-4xl font-bold text-blue-600">{Object.keys(categoryCounts).length}</p>
         </div>
 
         <div className="bg-white rounded-xl shadow-md p-6">
-          <div className="flex items-center space-x-3 mb-2">
-            <TrendingUp className="text-orange-500" size={24} />
-            <span className="text-gray-500 text-sm">Avg Risk Score</span>
+          <div className="flex items-center gap-3 mb-3">
+            <BarChart3 className="text-purple-500" size={24} />
+            <span className="text-sm text-gray-600">Resolution Rate</span>
           </div>
-          <p className="text-3xl font-bold text-orange-600">{stats.averageRisk}</p>
+          <p className="text-4xl font-bold text-purple-600">
+            {stats.totalReports > 0 
+              ? Math.round((stats.resolvedReports / stats.totalReports) * 100)
+              : 0}%
+          </p>
         </div>
       </div>
 
-      {/* Status Breakdown */}
+      {/* Category Distribution */}
       <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Status Distribution</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-6">Reports by Category</h2>
         <div className="space-y-4">
-          {statusStats.map((status) => (
-            <div key={status.key}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-2">
-                  <div 
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: status.color }}
-                  />
-                  <span className="font-medium text-gray-700">{status.name}</span>
-                </div>
-                <div className="text-right">
-                  <span className="font-bold text-gray-800">{status.count}</span>
-                  <span className="text-gray-500 text-sm ml-2">
-                    ({status.percentage.toFixed(1)}%)
-                  </span>
-                </div>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div 
-                  className="h-3 rounded-full transition-all duration-500"
-                  style={{ 
-                    width: `${status.percentage}%`,
-                    backgroundColor: status.color
-                  }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Category Breakdown */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Reports by Category</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {categoryStats.map((cat) => (
-            <div 
-              key={cat.key}
-              className="border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition-colors"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-2xl">{cat.icon}</span>
-                  <span className="font-medium text-gray-800">{cat.name}</span>
-                </div>
-                <span className="text-2xl font-bold text-gray-800">{cat.count}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="h-2 rounded-full"
-                  style={{ 
-                    width: `${cat.percentage}%`,
-                    backgroundColor: cat.color
-                  }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Risk Analysis */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">🔬 Risk Analysis by Category</h2>
-        <div className="space-y-3">
-          {riskByCategory.map((cat) => (
-            <div key={cat.key} className="flex items-center space-x-4">
-              <span className="text-2xl">{cat.icon}</span>
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-700">{cat.name}</span>
-                  <span className="text-sm font-bold text-gray-800">Avg Risk: {cat.avgRisk}</span>
+          {Object.entries(categoryCounts).map(([category, count]) => {
+            const catInfo = CATEGORIES[category] || CATEGORIES.OTHER;
+            const percentage = (count / maxCategoryCount) * 100;
+            
+            return (
+              <div key={category}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">{catInfo.icon}</span>
+                    <span className="font-medium text-gray-700">{catInfo.name}</span>
+                  </div>
+                  <span className="font-bold text-gray-800">{count}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div 
-                    className="h-3 rounded-full"
-                    style={{ 
-                      width: `${cat.avgRisk}%`,
-                      backgroundColor: cat.avgRisk >= 70 ? '#ef4444' : 
-                                       cat.avgRisk >= 40 ? '#f97316' : '#22c55e'
+                  <div
+                    className="h-3 rounded-full transition-all duration-500"
+                    style={{
+                      width: `${percentage}%`,
+                      backgroundColor: catInfo.color
                     }}
-                  />
+                  ></div>
                 </div>
               </div>
-              <span className="text-sm text-gray-500 w-16 text-right">
-                {cat.count} reports
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* Community Stats */}
+      {/* Status Distribution */}
       <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">🌍 Community Impact</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <Users className="mx-auto text-primary-600 mb-2" size={32} />
-            <p className="text-2xl font-bold text-gray-800">{users.length}</p>
-            <p className="text-sm text-gray-500">Active Reporters</p>
+        <h2 className="text-xl font-bold text-gray-800 mb-6">Status Overview</h2>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center p-4 bg-red-50 rounded-xl border border-red-200">
+            <p className="text-4xl font-bold text-red-600">{statusCounts.OPEN}</p>
+            <p className="text-sm font-medium text-red-700 mt-2">Open</p>
           </div>
-          
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <FileText className="mx-auto text-primary-600 mb-2" size={32} />
-            <p className="text-2xl font-bold text-gray-800">
-              {reports.reduce((sum, r) => sum + r.riskScore, 0)}
-            </p>
-            <p className="text-sm text-gray-500">Total Risk Identified</p>
+          <div className="text-center p-4 bg-orange-50 rounded-xl border border-orange-200">
+            <p className="text-4xl font-bold text-orange-600">{statusCounts.INVESTIGATING}</p>
+            <p className="text-sm font-medium text-orange-700 mt-2">Investigating</p>
           </div>
-          
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <CheckCircle2 className="mx-auto text-green-600 mb-2" size={32} />
-            <p className="text-2xl font-bold text-gray-800">
-              {stats.totalReports > 0 
-                ? Math.round((stats.resolvedReports / stats.totalReports) * 100)
-                : 0}%
-            </p>
-            <p className="text-sm text-gray-500">Resolution Rate</p>
+          <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
+            <p className="text-4xl font-bold text-green-600">{statusCounts.RESOLVED}</p>
+            <p className="text-sm font-medium text-green-700 mt-2">Resolved</p>
           </div>
-          
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <TrendingUp className="mx-auto text-primary-600 mb-2" size={32} />
-            <p className="text-2xl font-bold text-gray-800">
-              {users.reduce((sum, u) => sum + u.points, 0)}
-            </p>
-            <p className="text-sm text-gray-500">Total Points Earned</p>
-          </div>
+        </div>
+      </div>
+
+      {/* Risk Distribution */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-6">Risk Score Distribution</h2>
+        <div className="space-y-3">
+          {[
+            { label: 'High Risk (70-100)', min: 70, max: 100, color: 'bg-red-500' },
+            { label: 'Medium Risk (40-69)', min: 40, max: 69, color: 'bg-orange-500' },
+            { label: 'Low Risk (0-39)', min: 0, max: 39, color: 'bg-green-500' }
+          ].map(range => {
+            const count = reports.filter(r => r.riskScore >= range.min && r.riskScore <= range.max).length;
+            const percentage = stats.totalReports > 0 ? (count / stats.totalReports) * 100 : 0;
+            
+            return (
+              <div key={range.label} className="flex items-center gap-4">
+                <div className="w-32 text-sm text-gray-600">{range.label}</div>
+                <div className="flex-1 bg-gray-200 rounded-full h-4">
+                  <div
+                    className={`h-4 rounded-full ${range.color}`}
+                    style={{ width: `${percentage}%` }}
+                  ></div>
+                </div>
+                <div className="w-16 text-right font-bold text-gray-800">{count}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
